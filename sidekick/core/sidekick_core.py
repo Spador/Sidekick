@@ -12,8 +12,6 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from sidekick_tools import playwright_tools, other_tools
-
-# moved schemas out, but unchanged
 from .state import State, EvaluatorOutput
 from ..storage.sqlite_checkpointer import build_sqlite_checkpointer
 
@@ -27,7 +25,7 @@ class Sidekick:
         self.graph = None
         self.sidekick_id = str(uuid.uuid4())
 
-        # === Only change: SQLite-backed checkpointer (replaces MemorySaver) ===
+        # SQLite-backed checkpointer
         self.checkpointer = build_sqlite_checkpointer()
 
         self.browser = None
@@ -43,7 +41,6 @@ class Sidekick:
         await self.build_graph()
 
     def worker(self, state: State) -> Dict[str, Any]:
-        # ********** PROMPT STRING UNCHANGED **********
         system_message = f"""You are a helpful assistant that can use tools to complete tasks.
     You keep working on a task until either you have a question or clarification for the user, or the success criteria is met.
     You have many tools to help you, including tools to browse the internet, navigating and retrieving web pages.
@@ -100,7 +97,6 @@ class Sidekick:
     def evaluator(self, state: State) -> State:
         last_response = state["messages"][-1].content
 
-        # ********** PROMPT STRING UNCHANGED **********
         system_message = """You are an evaluator that determines if a task has been completed successfully by an Assistant.
     Assess the Assistant's last response based on the given criteria. Respond with your feedback, and with your decision on whether the success criteria has been met,
     and whether more input is needed from the user."""
@@ -167,7 +163,7 @@ class Sidekick:
         )
         graph_builder.add_edge(START, "worker")
 
-        # === Only change: compile with SQLite checkpointer ===
+        # Compile with SQLite checkpointer
         self.graph = graph_builder.compile(checkpointer=self.checkpointer)
 
     async def run_superstep(self, message, success_criteria, history):
