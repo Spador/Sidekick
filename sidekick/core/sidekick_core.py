@@ -13,7 +13,7 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from sidekick_tools import playwright_tools, other_tools
 from .state import State, EvaluatorOutput
-from ..storage.sqlite_checkpointer import build_sqlite_checkpointer
+from .storage.sqlite_checkpointer import build_memory_checkpointer
 
 
 class Sidekick:
@@ -25,8 +25,7 @@ class Sidekick:
         self.graph = None
         self.sidekick_id = str(uuid.uuid4())
 
-        # SQLite-backed checkpointer
-        self.checkpointer = build_sqlite_checkpointer()
+        self.checkpointer = build_memory_checkpointer()
 
         self.browser = None
         self.playwright = None

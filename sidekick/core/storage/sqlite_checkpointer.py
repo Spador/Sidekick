@@ -1,8 +1,8 @@
-import sqlite3
-from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.checkpoint.memory import MemorySaver
 
 
-def build_sqlite_checkpointer(db_path: str = "sidekick_checkpoints.sqlite") -> SqliteSaver:
-    # Thread-safe connection suitable for async usage
-    conn = sqlite3.connect(db_path, check_same_thread=False)
-    return SqliteSaver(conn)
+def build_memory_checkpointer() -> MemorySaver:
+    """
+    Returns the default in-memory checkpointer used by LangGraph.
+    """
+    return MemorySaver()
